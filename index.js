@@ -34,22 +34,18 @@ app.get('/api/classify', async (req, res) => {
       `https://api.genderize.io?name=${encodeURIComponent(name)}`
     );
 
-   if (data.gender === null || data.count === 0) {
-      return res.status(200).json({
-        status:  'error',
-        message: 'No prediction available for the provided name',
-      });
-    }
+    const sample_size  = data.count      ?? 0;
+    const probability  = data.probability ?? 0;
+    const gender       = data.gender      ?? null;
 
-    const sample_size  = data.count;
-    const probability  = data.probability;
-    const is_confident = probability >= 0.7 && sample_size >= 100;
+    // A prediction is reliable when backed by 100+ samples and 70%+ probability
+    const is_confident = gender !== null && probability >= 0.7 && sample_size >= 100;
 
     return res.status(200).json({
       status: 'success',
       data: {
-        name:         data.name,
-        gender:       data.gender,
+        name:         data.name ?? name,
+        gender,
         probability,
         sample_size,
         is_confident,
