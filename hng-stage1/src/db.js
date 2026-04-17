@@ -15,9 +15,9 @@ const { Pool } = require('pg');
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 
-  // Railway Postgres requires SSL in production; disable it locally
-  // by omitting DATABASE_URL or by setting NODE_ENV=development.
-  ssl: process.env.NODE_ENV === 'production'
+  // Railway Postgres always requires SSL. We enable it whenever
+  // DATABASE_URL is set (i.e. on any deployed environment).
+  ssl: process.env.DATABASE_URL
     ? { rejectUnauthorized: false }
     : false,
 });
